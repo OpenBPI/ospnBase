@@ -49,7 +49,7 @@ public class IMData {
     public static String certPem = null;
     public static String certKey = null;
 
-    public static boolean init(IMDb db, Properties prop){
+    public static void init(IMDb db, Properties prop){
         try {
             IMData.db = db;
             IMData.prop = prop;
@@ -97,14 +97,15 @@ public class IMData {
             service.osnKey = prop.getProperty("serviceKey", null);
             if(service.osnID == null || service.osnKey == null){
                 logError("service osnID is empty");
-                return false;
             }
-            return true;
         }
         catch (Exception e){
             logError(e);
         }
-        return false;
+    }
+    public static void setService(String osnID, String osnKey){
+        service.osnID = osnID;
+        service.osnKey = osnKey;
     }
     public static void setCommand(String version, String command, long flag, Function<SessionData,Void> run){
         cmdMap.put(command, new CommandData(version, command, flag, run));
