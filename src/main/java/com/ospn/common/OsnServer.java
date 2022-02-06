@@ -87,7 +87,7 @@ public class OsnServer {
         Socket socket = null;
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress(ip,port),1000);
+            socket.connect(new InetSocketAddress(ip,port),3000);
             socket.close();
             return true;
         }

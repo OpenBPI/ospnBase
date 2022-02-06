@@ -20,26 +20,31 @@ import static com.ospn.core.IMData.getSessionData;
 import static com.ospn.core.IMData.imNotifyPort;
 import static com.ospn.utils.CryptUtils.makeMessage;
 
-public class LtpData extends OsnServer {
-    public static ILtpEvent mCallback = null;
+public class LTPData extends OsnServer {
+    public static ILTPEvent mCallback = null;
     public static OsnSender mSender = null;
     public static String ipConnector = null;
     public static int ospnServicePort = 8400;
+    public static int ltpNotifyPort = 0;
     public static CryptData apps = new CryptData();
 
-    public boolean init(Properties prop, ILtpEvent callback){
+    public void init(Properties prop, ILTPEvent callback){
         mCallback = callback;
         ipConnector = prop.getProperty("ipConnector");
-        ospnServicePort = Integer.parseInt(prop.getProperty("ospnServicePort"));
+        if(prop.getProperty("ospnServicePort") != null){
+            ospnServicePort = Integer.parseInt(prop.getProperty("ospnServicePort"));
+        }
+        ltpNotifyPort = Integer.parseInt(prop.getProperty("ltpNotifyPort"));
         apps.osnID = prop.getProperty("appID");
         apps.osnKey = prop.getProperty("appKey");
         logInfo("Connector: " + ipConnector);
         if(apps.osnID == null || apps.osnKey == null){
             logError("appid or appkey empty");
-            return false;
+        }else{
+            IMData.setService(apps.osnID, apps.osnKey);
         }
 
-        AddService(imNotifyPort, new ChannelInitializer<SocketChannel>() {
+        AddService(ltpNotifyPort, new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel arg0) {
                 arg0.pipeline().addLast(new OsnServer.MessageDecoder());
@@ -49,7 +54,6 @@ public class LtpData extends OsnServer {
         });
         mSender = OsnSender.newInstance(ipConnector, ospnServicePort, null, false, 2000, new JsonSender(), null);
         pushOsnID(apps);
-        return true;
     }
     public void sendJson(JSONObject json){
         mSender.send(json);
@@ -101,9 +105,6 @@ public class LtpData extends OsnServer {
             if(command != null && command.equalsIgnoreCase("Heart")){
                 ctx.writeAndFlush(json);
                 return;
-            }
-            switch(command){
-
             }
             mCallback.handleMessage(ctx, json);
         }
