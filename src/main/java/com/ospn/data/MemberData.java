@@ -9,6 +9,7 @@ public class MemberData {
     public String groupID;
     public String remarks;
     public String nickName;
+    public String receiverKey;  // 每个成员的key，该key由ecc加密aes获得
     public int type;
     public int mute;
     public long createTime;
@@ -27,12 +28,21 @@ public class MemberData {
         this.groupID = groupID;
         this.type = type;
         this.inviter = "";
+        this.receiverKey = "";
     }
     public MemberData(String osnID, String groupID, int type, String inviter){
         this.osnID = osnID;
         this.groupID = groupID;
         this.type = type;
         this.inviter = inviter;
+        this.receiverKey = "";
+    }
+    public MemberData(String osnID, String groupID, int type, String inviter, String receiverKey){
+        this.osnID = osnID;
+        this.groupID = groupID;
+        this.type = type;
+        this.inviter = inviter;
+        this.receiverKey = receiverKey;
     }
     public void update(MemberData memberData, List<String> keys){
         //目前member信息不放内存，此接口不需要

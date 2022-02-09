@@ -27,7 +27,11 @@ public class IMData {
     public static CryptData service = new CryptData();
     public static String ipIMServer = null;
     public static String ipConnector = null;
+    public static String ipPeer = null;
+    public static String manageID = null;
     public static String urlSpace = null;
+    public static String serviceID = null;
+    public static String serviceKey = null;
     public static boolean msgDelete = true;
     public static boolean standAlone = false;
     public static boolean needRelated = true;
@@ -81,11 +85,16 @@ public class IMData {
             urlSpace = prop.getProperty("urlSpace", "");
             logInfo("urlSpace: "+urlSpace);
 
+            ipPeer = prop.getProperty("ipPeer", "");
+            manageID = prop.getProperty("manageID", "");
+            serviceID = prop.getProperty("serviceID", "");
+            serviceKey = prop.getProperty("serviceKey", "");
+
             String litapps = prop.getProperty("mainLitapps", null);
             if (litapps != null) {
                 mainLitapps = litapps.split(";");
             }
-			certPem = prop.getProperty("certPem", "");
+            certPem = prop.getProperty("certPem", "");
             certKey = prop.getProperty("certKey", "");
             if(!certPem.isEmpty() && !certKey.isEmpty()){
                 logInfo("use ssl");

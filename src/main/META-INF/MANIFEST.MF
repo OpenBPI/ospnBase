@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Class-Path: netty-common-4.1.45.Final.jar netty-transport-4.1.45.Final.j
+ ar netty-buffer-4.1.45.Final.jar mchange-commons-java-0.2.19.jar netty-
+ codec-http-4.1.45.Final.jar fastjson-1.2.76.jar netty-codec-4.1.45.Fina
+ l.jar mysql-connector-java-8.0.20.jar netty-resolver-4.1.45.Final.jar p
+ rotobuf-java-3.6.1.jar netty-handler-4.1.45.Final.jar c3p0-0.9.5.5.jar
+

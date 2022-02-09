@@ -18,6 +18,7 @@ public class UserData extends CryptData{
     public String msgKey;
     public int maxGroup;
     public String urlSpace;
+    public String owner2;
     public long loginTime;
     public long logoutTime;
     public long createTime;

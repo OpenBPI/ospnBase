@@ -3,12 +3,14 @@ package com.ospn.core;
 import com.alibaba.fastjson.JSONObject;
 import com.ospn.common.OsnSender;
 import com.ospn.common.OsnServer;
+import com.ospn.common.ECUtils;
 import com.ospn.data.CryptData;
 import com.ospn.data.SessionData;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
+//import sun.security.util.ECUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +42,18 @@ public class LTPData extends OsnServer {
         logInfo("Connector: " + ipConnector);
         if(apps.osnID == null || apps.osnKey == null){
             logError("appid or appkey empty");
-        }else{
-            IMData.setService(apps.osnID, apps.osnKey);
+            // 如果没有appid，则创建appid，并写入配置文件中
+            String[] keys = ECUtils.createOsnID("service");
+            apps.osnID = keys[0];
+            apps.osnKey = keys[1];
+            prop.setProperty("appID", apps.osnID);
+            prop.setProperty("appKey", apps.osnKey);
+            // 写入配置文件
+
         }
+
+        IMData.setService(apps.osnID, apps.osnKey);
+
 
         AddService(ltpNotifyPort, new ChannelInitializer<SocketChannel>() {
             @Override
@@ -64,6 +75,7 @@ public class LTPData extends OsnServer {
     }
     public void sendMessage(String to, JSONObject data){
         JSONObject json = makeMessage("Message", apps.osnID, to, data, apps.osnKey, null);
+        logInfo("sendMessage" + json);
         sendJson(json);
     }
     public void pushOsnID(CryptData cryptData) {

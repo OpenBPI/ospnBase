@@ -11,19 +11,21 @@ public class GroupData extends CryptData{
     public String name;
     public String owner;
     public String portrait;
-    public int type; //群组类型
-    public int joinType; //加入类型
-    public int passType; //审批类型
-    public int mute; //全员禁言
+    public String aesKey;       // added by CESHI
+    public int type; //群锟斤拷锟斤拷锟斤拷
+    public int joinType; //锟斤拷锟斤拷锟斤拷锟斤拷
+    public int passType; //锟斤拷锟斤拷锟斤拷锟斤拷
+    public int mute; //全员锟斤拷锟斤拷
     public int maxMember;
     public long createTime;
     public Set<String> userList = new HashSet<>();
+    public Set<MemberData> members = new HashSet<>(); // add by CESHI
     //public Set<String> userSet = new HashSet<>();
     public Set<String> muteSet = new HashSet<>();
 
-    public static int GroupType_Normal = 0;   //好友群，成员可修改群组名字、头像
-    public static int GroupType_Free = 1;     //开放群，成员可修改群属性
-    public static int GroupType_Restrict = 2; //限制群，成员无法修改群属性
+    public static int GroupType_Normal = 0;   //锟斤拷锟斤拷群锟斤拷锟斤拷员锟斤拷锟睫革拷群锟斤拷锟斤拷锟街★拷头锟斤拷
+    public static int GroupType_Free = 1;     //锟斤拷锟斤拷群锟斤拷锟斤拷员锟斤拷锟睫革拷群锟斤拷锟斤拷
+    public static int GroupType_Restrict = 2; //锟斤拷锟斤拷群锟斤拷锟斤拷员锟睫凤拷锟睫革拷群锟斤拷锟斤拷
 
     public static int GroupJoinType_Free = 0;
     public static int GroupJoinType_Member = 1;

@@ -6,6 +6,8 @@ import com.ospn.common.ECUtils;
 import com.ospn.common.OsnUtils;
 import com.ospn.data.*;
 
+import java.util.Base64;
+
 import static com.ospn.data.Constant.*;
 import static com.ospn.common.OsnUtils.*;
 import static com.ospn.core.IMData.*;
@@ -96,6 +98,111 @@ public class CryptUtils {
         }
         return null;
     }
+
+    // ---- add by CESHI ---- //
+    public static String reEncryptContent(JSONObject json, String aes, String groupId){
+        String crypto = json.getString("crypto");
+        String content;
+        byte[] aesKey;// = aes.getBytes();
+
+        if (crypto == null || crypto.equalsIgnoreCase("none")) {
+            //aesKey = getAesKey();
+            content = json.getString("content");
+        } else {
+            // ecc 解密
+            aesKey = ECUtils.ecDecrypt2(groupId, json.getString("ecckey"));
+            content = json.getString("content");
+            // aes 解密
+            content = new String(aesDecrypt(content, aesKey));
+        }
+        // content 先转成json
+        JSONObject jsonWrap = JSON.parseObject(content);
+        aesKey = Base64.getDecoder().decode(aes);
+        //这里有个json数据组合，content组合成json以后，才做的aes加密
+        // ---- content data ---- //
+        // content 转 json
+        // originalUser
+        // ---- content data end ---- //
+        JSONObject dataWrap = new JSONObject();
+        dataWrap.put("originalUser", json.getString("from"));
+        for (String s : dataWrap.keySet())
+            jsonWrap.put(s, dataWrap.get(s));
+        content = jsonWrap.toString();
+        // aes 加密
+        content = aesEncrypt(content.getBytes(), aesKey);
+
+        return content;
+    }
+    public static JSONObject packGroupMessage(
+            JSONObject json,
+            String from,
+            MemberData to,
+            String key,
+            String content
+    ) {
+        JSONObject data = new JSONObject();
+        data.put("originalUser", json.getString("from"));
+        data = packGroupMessage(json, from, to, data, key, content);
+        assert data != null;
+        data.put("hash0", json.getString("hash"));
+        return data;
+    }
+    // ---- add by CESHI end ---- //
+    // ---- add by CESHI ---- //
+    public static JSONObject packGroupMessage(
+            JSONObject json,
+            String from,
+            MemberData to,
+            JSONObject dataWrap,
+            String key,          //这个key是group的osnid，用于签名
+            String content
+    ) {
+        // ---- json data ---- //
+        // command
+        // ver
+        // from
+        // to
+        // timestamp
+        // ecckey
+        // crypto
+        // content
+        // hash
+        // sign
+        // ---- json data end ---- //
+        try {
+            JSONObject data = new JSONObject();
+            data.put("command", json.getString("command"));
+            data.put("ver", json.getString("ver"));
+            data.put("from", from);
+            data.put("to", to.osnID);   // 这里改为osnid string
+            data.put("timestamp", json.getString("timestamp"));
+
+
+            if (dataWrap == null) {
+                dataWrap = new JSONObject();
+            }
+            String crypto = json.getString("crypto");
+
+            // ecc 加密
+
+            data.put("ecckey", to.receiverKey);
+            data.put("crypto", "ecc-aes");
+
+            data.put("content", content);
+
+            String calc = from + to + json.getString("timestamp") + data.getString("content");
+            String hash = ECUtils.osnHash(calc.getBytes());
+            String sign = ECUtils.osnSign(key, hash.getBytes());
+            data.put("hash", hash);
+            data.put("sign", sign);
+
+            return data;
+        } catch (Exception e) {
+            OsnUtils.logError(e);
+        }
+        return null;
+    }
+    // ---- add by CESHI end ---- //
 
     public static JSONObject wrapMessage(String command, String from, String to, JSONObject data, String key, JSONObject original) {
         JSONObject json = new JSONObject();
